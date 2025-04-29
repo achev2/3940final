@@ -1,77 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-
-    <button onclick="createEntry()">POST - Create Entry</button>
-    <button onclick="getEntry()">GET - Retrieve Entry</button>
-    <button onclick="deleteEntry()">DELETE - Remove Entry</button>
-
-    <script>
+    <div class="container">
+        <h2>Test API Endpoints</h2>
+        <div>
+            <button id="postBtn">POST - Create Entry</button>
+            <button id="getBtn" disabled>GET - Retrieve Entry</button>
+            <button id="deleteBtn" disabled>DELETE - Remove Entry</button>
+        </div>
+        <div class="status" id="status"></div>
+    </div>
     
-    //render backend url
-    const API_URL = 'https://three940final-backend.onrender.com/api';
-
-    const postBtn = document.getElementById('postBtn');
-    const getBtn = document.getElementById('getBtn');
-    const deleteBtn = document.getElementById('deleteBtn');
-    const responseElement = document.getElementById('responseElement');
-    const statusElement = document.getElementById('statusElement');
-
-    const getCurrentId = () => document.getElementById('entryId').value || '1';
-
-    postBtn.addEventListener('click', async () => {
-        try {
-            const response = await fetch(`${API_URL}/upsertEntry`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ Name: 'John Doe', Age: 30 }),
-            });
-            const data = await response.json();
-            displayResponse(data, response.status);
-        } catch (error) {
-            displayError(error);
+    <div class="container">
+        <h2>API Response:</h2>
+        <pre id="response">No API calls made yet.</pre>
+    </div>
+    
+    <script>
+        
+        const postBtn = document.getElementById('postBtn');
+        const getBtn = document.getElementById('getBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const responseElement = document.getElementById('response');
+        const statusElement = document.getElementById('status');
+        
+        let currentId = null;
+        
+        //render backend url
+        const API_URL = 'https://your-backend-url.onrender.com/api';
+        
+        function displayResponse(data, statusCode) {
+            responseElement.textContent = JSON.stringify(data, null, 2);
+            
+            if (statusCode >= 200 && statusCode < 300) {
+                statusElement.textContent = `Status: ${statusCode} OK`;
+                statusElement.className = 'status success';
+            } else {
+                statusElement.textContent = `Status: ${statusCode} Error`;
+                statusElement.className = 'status error';
+            }
         }
-    });
-
-    getBtn.addEventListener('click', async () => {
-        try {
-            const currentId = getCurrentId();
-            const response = await fetch(`${API_URL}/getEntry/${currentId}`);
-            const data = await response.json();
-            displayResponse(data, response.status);
-        } catch (error) {
-            displayError(error);
-        }
-    });
-
-    deleteBtn.addEventListener('click', async () => {
-        try {
-            const currentId = getCurrentId();
-            const response = await fetch(`${API_URL}/deleteEntry/${currentId}`, {
-                method: 'DELETE'
-            });
-            const data = await response.json();
-            displayResponse(data, response.status);
-        } catch (error) {
-            displayError(error);
-        }
-    });
-
-    function displayResponse(data, status) {
-        responseElement.textContent = JSON.stringify(data, null, 2);
-        statusElement.textContent = `Status: ${status}`;
-        statusElement.className = 'status success';
-    }
-
-    function displayError(error) {
-        responseElement.textContent = `Error: ${error.message}`;
-        statusElement.textContent = 'Connection Error';
-        statusElement.className = 'status error';
-    }
+        
+        //post
+        postBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_URL}/upsertEntry`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        Name: 'Test User',
+                        Age: 25
+                    })
+                });
+                
+                const data = await response.json();
+                displayResponse(data, response.status);
+               
+                currentId = data.id;
+                getBtn.disabled = false;
+                deleteBtn.disabled = false;
+            } catch (error) {
+                responseElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Connection Error';
+                statusElement.className = 'status error';
+            }
+        });
+        
+        //get
+        getBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_URL}/getEntry/${currentId}`);
+                const data = await response.json();
+                displayResponse(data, response.status);
+            } catch (error) {
+                responseElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Connection Error';
+                statusElement.className = 'status error';
+            }
+        });
+        
+        //delete
+        deleteBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_URL}/deleteEntry/${currentId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                displayResponse(data, response.status);
+                
+                currentId = null;
+                getBtn.disabled = true;
+                deleteBtn.disabled = true;
+            } catch (error) {
+                responseElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Connection Error';
+                statusElement.className = 'status error';
+            }
+        });
     </script>
-
-    <style>
-        .status.success { color: green; }
-        .status.error { color: red; }
-    </style>
 </body>
 </html>
