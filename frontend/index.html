@@ -27,23 +27,27 @@
         .catch(error => console.error('POST error:', error));
     }
 
-    //get
+   //get
     function getEntry() {
-        fetch(`${API_URL}/getEntry/1`)
-        .then(response => response.json())
-        .then(data => console.log('Entry retrieved:', data))
-        .catch(error => console.error('GET error:', error));
-    }
+    fetch(`${API_URL}/getEntry/1`)
+    .then(response => response.json())
+    .then(data => console.log('GET success:', data))
+    .catch(error => console.error('GET error:', error));
+}
 
-    //delete
-    function deleteEntry() {
-        fetch(`${API_URL}/deleteEntry/1`, { 
-            method: 'DELETE',
-        })
-        .then(response => response.json())
-        .then(data => console.log('Entry deleted:', data))
-        .catch(error => console.error('DELETE error:', error));
-    }
+//delete
+function deleteEntry() {
+    fetch(`${API_URL}/deleteEntry/1`, {
+        method: 'DELETE',
+    })
+    .then(response => response.json())
+    .then(data => console.log('DELETE success:', data))
+    .catch(error => console.error('DELETE error:', error));
+}
+    </script>
+
+</body>
+</html>
     </script>
 
 </body>
