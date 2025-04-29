@@ -10,7 +10,7 @@
     //render backend url
     const API_URL = 'https://three940final-backend.onrender.com/api';
 
-    // POST
+    //post
     function createEntry() {
         fetch(`${API_URL}/upsertEntry`, {
             method: 'POST',
@@ -18,20 +18,20 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                Name: "Test User",
-                Age: 25
+                Name: "John Doe",  
+                Age: 30
             }),
         })
         .then(response => response.json())
-        .then(data => console.log('POST success:', data))
+        .then(data => console.log('Entry created:', data))
         .catch(error => console.error('POST error:', error));
     }
 
     //get
     function getEntry() {
-        fetch(`${API_URL}/getEntry/1`) 
+        fetch(`${API_URL}/getEntry/1`)
         .then(response => response.json())
-        .then(data => console.log('GET success:', data))
+        .then(data => console.log('Entry retrieved:', data))
         .catch(error => console.error('GET error:', error));
     }
 
@@ -41,7 +41,7 @@
             method: 'DELETE',
         })
         .then(response => response.json())
-        .then(data => console.log('DELETE success:', data))
+        .then(data => console.log('Entry deleted:', data))
         .catch(error => console.error('DELETE error:', error));
     }
     </script>
