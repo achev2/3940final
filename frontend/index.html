@@ -10,45 +10,68 @@
     //render backend url
     const API_URL = 'https://three940final-backend.onrender.com/api';
 
-    //post
-    function createEntry() {
-        fetch(`${API_URL}/upsertEntry`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                Name: "John Doe",  
-                Age: 30
-            }),
-        })
-        .then(response => response.json())
-        .then(data => console.log('Entry created:', data))
-        .catch(error => console.error('POST error:', error));
+    const postBtn = document.getElementById('postBtn');
+    const getBtn = document.getElementById('getBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const responseElement = document.getElementById('responseElement');
+    const statusElement = document.getElementById('statusElement');
+
+    const getCurrentId = () => document.getElementById('entryId').value || '1';
+
+    postBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_URL}/upsertEntry`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Name: 'John Doe', Age: 30 }),
+            });
+            const data = await response.json();
+            displayResponse(data, response.status);
+        } catch (error) {
+            displayError(error);
+        }
+    });
+
+    getBtn.addEventListener('click', async () => {
+        try {
+            const currentId = getCurrentId();
+            const response = await fetch(`${API_URL}/getEntry/${currentId}`);
+            const data = await response.json();
+            displayResponse(data, response.status);
+        } catch (error) {
+            displayError(error);
+        }
+    });
+
+    deleteBtn.addEventListener('click', async () => {
+        try {
+            const currentId = getCurrentId();
+            const response = await fetch(`${API_URL}/deleteEntry/${currentId}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            displayResponse(data, response.status);
+        } catch (error) {
+            displayError(error);
+        }
+    });
+
+    function displayResponse(data, status) {
+        responseElement.textContent = JSON.stringify(data, null, 2);
+        statusElement.textContent = `Status: ${status}`;
+        statusElement.className = 'status success';
     }
 
-   //get
-    function getEntry() {
-    fetch(`${API_URL}/getEntry/1`)
-    .then(response => response.json())
-    .then(data => console.log('GET success:', data))
-    .catch(error => console.error('GET error:', error));
-}
-
-//delete
-function deleteEntry() {
-    fetch(`${API_URL}/deleteEntry/1`, {
-        method: 'DELETE',
-    })
-    .then(response => response.json())
-    .then(data => console.log('DELETE success:', data))
-    .catch(error => console.error('DELETE error:', error));
-}
+    function displayError(error) {
+        responseElement.textContent = `Error: ${error.message}`;
+        statusElement.textContent = 'Connection Error';
+        statusElement.className = 'status error';
+    }
     </script>
 
-</body>
-</html>
-    </script>
-
+    <style>
+        .status.success { color: green; }
+        .status.error { color: red; }
+    </style>
 </body>
 </html>
