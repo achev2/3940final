@@ -1,28 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    
-</head>
-<body>
-
 
     <button onclick="createEntry()">POST - Create Entry</button>
     <button onclick="getEntry()">GET - Retrieve Entry</button>
     <button onclick="deleteEntry()">DELETE - Remove Entry</button>
 
-    <br><br>
-    <input type="number" id="entryId" placeholder="Enter ID">
-    <br><br>
-
-    <div id="output"></div>
-
     <script>
-
+    
     //render backend url
     const API_URL = 'https://three940final-backend.onrender.com/api';
 
-    //post
+    // POST
     function createEntry() {
         fetch(`${API_URL}/upsertEntry`, {
             method: 'POST',
@@ -34,48 +22,29 @@
                 Age: 25
             }),
         })
-        .then(response => {
-            console.log('POST response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('POST success:', data);
-            document.getElementById('output').innerText = `Created Entry: ${JSON.stringify(data)}`;
-        })
+        .then(response => response.json())
+        .then(data => console.log('POST success:', data))
         .catch(error => console.error('POST error:', error));
     }
 
     //get
     function getEntry() {
-        const id = document.getElementById('entryId').value || 1; 
-        fetch(`${API_URL}/getEntry/${id}`)
-        .then(response => {
-            console.log('GET response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('GET success:', data);
-            document.getElementById('output').innerText = `Retrieved Entry: ${JSON.stringify(data)}`;
-        })
+        fetch(`${API_URL}/getEntry/1`) 
+        .then(response => response.json())
+        .then(data => console.log('GET success:', data))
         .catch(error => console.error('GET error:', error));
     }
 
     //delete
     function deleteEntry() {
-        const id = document.getElementById('entryId').value || 1;
-        fetch(`${API_URL}/deleteEntry/${id}`, {
+        fetch(`${API_URL}/deleteEntry/1`, { 
             method: 'DELETE',
         })
-        .then(response => {
-            console.log('DELETE response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('DELETE success:', data);
-            document.getElementById('output').innerText = `Deleted Entry: ${JSON.stringify(data)}`;
-        })
+        .then(response => response.json())
+        .then(data => console.log('DELETE success:', data))
         .catch(error => console.error('DELETE error:', error));
     }
     </script>
+
 </body>
 </html>
