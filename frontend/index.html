@@ -1,104 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
-    <div class="container">
-        <h2>Test API Endpoints</h2>
-        <div>
-            <button id="postBtn">POST - Create Entry</button>
-            <button id="getBtn" disabled>GET - Retrieve Entry</button>
-            <button id="deleteBtn" disabled>DELETE - Remove Entry</button>
-        </div>
-        <div class="status" id="status"></div>
-    </div>
-    
-    <div class="container">
-        <h2>API Response:</h2>
-        <pre id="response">No API calls made yet.</pre>
-    </div>
-    
-    <script>
-        
-        const postBtn = document.getElementById('postBtn');
-        const getBtn = document.getElementById('getBtn');
-        const deleteBtn = document.getElementById('deleteBtn');
-        const responseElement = document.getElementById('response');
-        const statusElement = document.getElementById('status');
-        
-        let currentId = null;
-        
-        //render backend url
-        const API_URL = 'https://your-backend-url.onrender.com/api';
-        
-        function displayResponse(data, statusCode) {
-            responseElement.textContent = JSON.stringify(data, null, 2);
-            
-            if (statusCode >= 200 && statusCode < 300) {
-                statusElement.textContent = `Status: ${statusCode} OK`;
-                statusElement.className = 'status success';
-            } else {
-                statusElement.textContent = `Status: ${statusCode} Error`;
-                statusElement.className = 'status error';
-            }
+<html>
+<head>
+    <title>Entry API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f9f9f9;
         }
-        
-        //post
-        postBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`${API_URL}/upsertEntry`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        Name: 'Test User',
-                        Age: 25
-                    })
-                });
-                
-                const data = await response.json();
-                displayResponse(data, response.status);
-               
-                currentId = data.id;
-                getBtn.disabled = false;
-                deleteBtn.disabled = false;
-            } catch (error) {
-                responseElement.textContent = `Error: ${error.message}`;
-                statusElement.textContent = 'Connection Error';
-                statusElement.className = 'status error';
-            }
-        });
-        
-        //get
-        getBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`${API_URL}/getEntry/${currentId}`);
-                const data = await response.json();
-                displayResponse(data, response.status);
-            } catch (error) {
-                responseElement.textContent = `Error: ${error.message}`;
-                statusElement.textContent = 'Connection Error';
-                statusElement.className = 'status error';
-            }
-        });
-        
-        //delete
-        deleteBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`${API_URL}/deleteEntry/${currentId}`, {
-                    method: 'DELETE'
-                });
-                
-                const data = await response.json();
-                displayResponse(data, response.status);
-                
-                currentId = null;
-                getBtn.disabled = true;
-                deleteBtn.disabled = true;
-            } catch (error) {
-                responseElement.textContent = `Error: ${error.message}`;
-                statusElement.textContent = 'Connection Error';
-                statusElement.className = 'status error';
-            }
-        });
-    </script>
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #eee;
+            cursor: not-allowed;
+        }
+
+        pre {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-size: 13px;
+            font-family: monospace;
+        }
+
+        .status {
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="button-group">
+    <button id="postBtn">POST</button>
+    <button id="getBtn" disabled>GET</button>
+    <button id="deleteBtn" disabled>DELETE</button>
+</div>
+
+<div class="status" id="status"></div>
+<pre id="response">No API calls made yet.</pre>
+
+<script>
+    const postBtn = document.getElementById('postBtn');
+    const getBtn = document.getElementById('getBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const responseElement = document.getElementById('response');
+    const statusElement = document.getElementById('status');
+
+    let currentId = null;
+
+    const API_URL = 'https://three940final-backend.onrender.com/api';
+
+    function displayResponse(data, statusCode) {
+        responseElement.textContent = JSON.stringify(data, null, 2);
+        statusElement.textContent = `Status: ${statusCode}`;
+        statusElement.className = 'status ' + (statusCode >= 200 && statusCode < 300 ? 'success' : 'error');
+    }
+
+    postBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_URL}/upsertEntry`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Name: 'Test User', Age: 25 })
+            });
+            const data = await response.json();
+            displayResponse(data, response.status);
+            currentId = data.id;
+            getBtn.disabled = false;
+            deleteBtn.disabled = false;
+        } catch (error) {
+            responseElement.textContent = `Error: ${error.message}`;
+            statusElement.textContent = 'Connection Error';
+            statusElement.className = 'status error';
+        }
+    });
+
+    getBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_URL}/getEntry/${currentId}`);
+            const data = await response.json();
+            displayResponse(data, response.status);
+        } catch (error) {
+            responseElement.textContent = `Error: ${error.message}`;
+            statusElement.textContent = 'Connection Error';
+            statusElement.className = 'status error';
+        }
+    });
+
+    deleteBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_URL}/deleteEntry/${currentId}`, { method: 'DELETE' });
+            const data = await response.json();
+            displayResponse(data, response.status);
+            currentId = null;
+            getBtn.disabled = true;
+            deleteBtn.disabled = true;
+        } catch (error) {
+            responseElement.textContent = `Error: ${error.message}`;
+            statusElement.textContent = 'Connection Error';
+            statusElement.className = 'status error';
+        }
+    });
+</script>
 </body>
 </html>
