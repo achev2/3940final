@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Entry Management API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+        }
+        #postBtn {
+            background-color: #4CAF50;
+        }
+        #getBtn {
+            background-color: #2196F3;
+        }
+        #deleteBtn {
+            background-color: #f44336;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #response {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+        .status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Entry Management API Test</h1>
+    
+    <div class="container">
+        <h2>Test API Endpoints</h2>
+        <div>
+            <button id="postBtn">POST - Create Entry</button>
+            <button id="getBtn" disabled>GET - Retrieve Entry</button>
+            <button id="deleteBtn" disabled>DELETE - Remove Entry</button>
+        </div>
+        <div class="status" id="status"></div>
+    </div>
+    
+    <div class="container">
+        <h2>API Response:</h2>
+        <pre id="response">No API calls made yet.</pre>
+    </div>
+    
+    <script>
+        // DOM elements
+        const postBtn = document.getElementById('postBtn');
+        const getBtn = document.getElementById('getBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const responseElement = document.getElementById('response');
+        const statusElement = document.getElementById('status');
+        
+        // Store current entry ID
+        let currentId = null;
+        
+        // Replace with your Render backend URL when deployed
+        const API_URL = 'https://your-backend-url.onrender.com/api';
+        
+        // Function to display responses
+        function displayResponse(data, statusCode) {
+            responseElement.textContent = JSON.stringify(data, null, 2);
+            
+            if (statusCode >= 200 && statusCode < 300) {
+                statusElement.textContent = `Status: ${statusCode} OK`;
+                statusElement.className = 'status success';
+            } else {
+                statusElement.textContent = `Status: ${statusCode} Error`;
+                statusElement.className = 'status error';
+            }
+        }
+        
+        // POST request (Create)
+        postBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_URL}/upsertEntry`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        Name: 'Test User',
+                        Age: 25
+                    })
+                });
+                
+                const data = await response.json();
+                displayResponse(data, response.status);
+                
+                // Save the ID and enable other buttons
+                currentId = data.id;
+                getBtn.disabled = false;
+                deleteBtn.disabled = false;
+            } catch (error) {
+                responseElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Connection Error';
+                statusElement.className = 'status error';
+            }
+        });
+        
+        // GET request
+        getBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_URL}/getEntry/${currentId}`);
+                const data = await response.json();
+                displayResponse(data, response.status);
+            } catch (error) {
+                responseElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Connection Error';
+                statusElement.className = 'status error';
+            }
+        });
+        
+        // DELETE request
+        deleteBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_URL}/deleteEntry/${currentId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                displayResponse(data, response.status);
+                
+                // Reset after deletion
+                currentId = null;
+                getBtn.disabled = true;
+                deleteBtn.disabled = true;
+            } catch (error) {
+                responseElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Connection Error';
+                statusElement.className = 'status error';
+            }
+        });
+    </script>
+</body>
+</html>
