@@ -82,20 +82,18 @@
     </div>
     
     <script>
-        // DOM elements
         const postBtn = document.getElementById('postBtn');
         const getBtn = document.getElementById('getBtn');
         const deleteBtn = document.getElementById('deleteBtn');
         const responseElement = document.getElementById('response');
         const statusElement = document.getElementById('status');
         
-        // Store current entry ID
         let currentId = null;
+
+        //render backend url
+        const API_URL = 'https://three940final-backend.onrender.com/api';
         
-        // Replace with your Render backend URL when deployed
-        const API_URL = 'https://your-backend-url.onrender.com/api';
-        
-        // Function to display responses
+        //display responses
         function displayResponse(data, statusCode) {
             responseElement.textContent = JSON.stringify(data, null, 2);
             
@@ -108,7 +106,7 @@
             }
         }
         
-        // POST request (Create)
+        //post
         postBtn.addEventListener('click', async () => {
             try {
                 const response = await fetch(`${API_URL}/upsertEntry`, {
@@ -125,7 +123,6 @@
                 const data = await response.json();
                 displayResponse(data, response.status);
                 
-                // Save the ID and enable other buttons
                 currentId = data.id;
                 getBtn.disabled = false;
                 deleteBtn.disabled = false;
@@ -136,7 +133,7 @@
             }
         });
         
-        // GET request
+        //get
         getBtn.addEventListener('click', async () => {
             try {
                 const response = await fetch(`${API_URL}/getEntry/${currentId}`);
@@ -149,7 +146,7 @@
             }
         });
         
-        // DELETE request
+        //delete
         deleteBtn.addEventListener('click', async () => {
             try {
                 const response = await fetch(`${API_URL}/deleteEntry/${currentId}`, {
@@ -159,7 +156,6 @@
                 const data = await response.json();
                 displayResponse(data, response.status);
                 
-                // Reset after deletion
                 currentId = null;
                 getBtn.disabled = true;
                 deleteBtn.disabled = true;
